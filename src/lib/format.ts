@@ -5,6 +5,7 @@ function parseUtc(iso: string): Date {
 }
 
 const dayFmt = new Intl.DateTimeFormat(undefined, { weekday: 'short', day: 'numeric', month: 'short' })
+const weekdayFmt = new Intl.DateTimeFormat(undefined, { weekday: 'short' })
 const timeFmt = new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit' })
 const fullFmt = new Intl.DateTimeFormat(undefined, {
   weekday: 'long',
@@ -16,6 +17,14 @@ const fullFmt = new Intl.DateTimeFormat(undefined, {
 
 export function formatDay(iso: string): string {
   return dayFmt.format(parseUtc(iso))
+}
+
+export function weekdayShort(iso: string): string {
+  return weekdayFmt.format(parseUtc(iso))
+}
+
+export function dayOfMonth(iso: string): number {
+  return parseUtc(iso).getDate()
 }
 
 export function formatTime(iso: string): string {

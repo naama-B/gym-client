@@ -5,7 +5,7 @@ import { Star, Ticket, X } from 'lucide-react'
 import { errorMessage } from '../api/client'
 import { useCancelBooking, useMyBookings } from '../api/queries'
 import type { BookingResponse } from '../api/types'
-import { formatDay, formatTime, isPast } from '../lib/format'
+import { dayOfMonth, formatDay, formatTime, isPast, weekdayShort } from '../lib/format'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
@@ -135,10 +135,10 @@ function BookingRow({
       <Card className="flex flex-wrap items-center gap-4 p-4 sm:flex-nowrap">
         <div className="tnum flex w-14 shrink-0 flex-col items-center rounded-xl border border-ink-700 bg-ink-900 py-2 text-center">
           <span className="font-display text-[11px] uppercase text-smoke">
-            {formatDay(booking.startsAtUtc).split(' ')[0]}
+            {weekdayShort(booking.startsAtUtc)}
           </span>
           <span className="font-display text-lg font-bold leading-none">
-            {new Date(booking.startsAtUtc).getDate()}
+            {dayOfMonth(booking.startsAtUtc)}
           </span>
         </div>
 
