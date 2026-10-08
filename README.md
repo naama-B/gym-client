@@ -5,8 +5,9 @@ schedule, book a spot or join the waitlist, track their queue position, and rate
 attended. Admins schedule sessions, curate the class catalogue and instructor roster, and read
 each session's waiting list.
 
-> Design language: **"Kinetic & bold"** — near-black canvas, one electric-lime accent, oversized
-> display type, motion on transitions.
+> Design language: **"Kinetic & bold", daylight cut** — bright bone canvas, near-black ink, one
+> electric-orange accent, oversized display type, motion on transitions. (The auth split-screen
+> keeps a dark hero panel.)
 
 ## Stack
 
@@ -69,14 +70,15 @@ src/
     layout/     AppShell (nav + footer)
     SessionCard, RateModal, ProtectedRoute, Logo
   lib/          cn (class merge), date/format helpers, small hooks
-  pages/        Login, Register, Sessions, SessionDetail, MyBookings
+  pages/        Login, Register, Sessions, SessionDetail, Reviews, MyBookings
     admin/      AdminLayout + Sessions / ClassTypes / Instructors
 ```
 
 ## How it maps to the API
 
 - `POST /auth/login|register` → `AuthContext`
-- `GET /classsessions` (paged, `search`, `onlyAvailable`, `sortBy`) → **Classes**
+- `GET /classsessions` (paged, `search`, `onlyAvailable`, `sortBy`, `fromUtc`) → **Classes** — only sessions that haven't taken place yet
+- `GET /classsessions/reviews` → **Reviews** — every rated class, its title + instructor, then the reviews
 - `GET /classsessions/{id}` + `GET /classsessions/{id}/ratings` → **Class detail**
 - `POST /bookings`, `POST /bookings/{id}/cancel`, `GET /bookings/mine` → booking flow + **My bookings**
 - `POST /classsessions/{id}/ratings` → star rating (create or update)

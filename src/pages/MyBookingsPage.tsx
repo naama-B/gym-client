@@ -31,7 +31,7 @@ export function MyBookingsPage() {
   return (
     <div className="space-y-8">
       <header className="flex flex-col gap-2">
-        <p className="font-display text-xs uppercase tracking-[0.3em] text-volt-400">Your spots</p>
+        <p className="font-display text-xs uppercase tracking-[0.3em] text-volt-300">Your spots</p>
         <h1 className="display text-5xl sm:text-6xl">My bookings</h1>
       </header>
 

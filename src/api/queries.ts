@@ -20,6 +20,7 @@ import type {
 
 export const qk = {
   sessions: (q: ClassSessionQuery) => ['sessions', q] as const,
+  reviews: ['reviews'] as const,
   session: (id: number) => ['session', id] as const,
   waitlist: (id: number) => ['waitlist', id] as const,
   ratings: (id: number) => ['ratings', id] as const,
@@ -35,6 +36,13 @@ export function useSessions(query: ClassSessionQuery) {
     queryKey: qk.sessions(query),
     queryFn: ({ signal }) => sessionsApi.list(query, signal),
     placeholderData: keepPreviousData,
+  })
+}
+
+export function useReviewedSessions() {
+  return useQuery({
+    queryKey: qk.reviews,
+    queryFn: ({ signal }) => sessionsApi.reviews(signal),
   })
 }
 
@@ -107,6 +115,7 @@ export function useRate(sessionId: number) {
       qc.invalidateQueries({ queryKey: qk.ratings(sessionId) })
       qc.invalidateQueries({ queryKey: qk.session(sessionId) })
       qc.invalidateQueries({ queryKey: ['sessions'] })
+      qc.invalidateQueries({ queryKey: qk.reviews })
     },
   })
 }

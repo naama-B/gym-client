@@ -14,6 +14,9 @@ const SessionDetailPage = lazy(() =>
 const MyBookingsPage = lazy(() =>
   import('./pages/MyBookingsPage').then((m) => ({ default: m.MyBookingsPage })),
 )
+const ReviewsPage = lazy(() =>
+  import('./pages/ReviewsPage').then((m) => ({ default: m.ReviewsPage })),
+)
 const AdminLayout = lazy(() =>
   import('./pages/admin/AdminLayout').then((m) => ({ default: m.AdminLayout })),
 )
@@ -39,6 +42,7 @@ export default function App() {
             <Route index element={<Navigate to="/classes" replace />} />
             <Route path="classes" element={<SessionsPage />} />
             <Route path="classes/:id" element={<SessionDetailPage />} />
+            <Route path="reviews" element={<ReviewsPage />} />
             <Route path="bookings" element={<MyBookingsPage />} />
 
             <Route path="admin" element={<ProtectedRoute adminOnly />}>

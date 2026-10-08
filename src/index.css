@@ -2,39 +2,41 @@
 
 /* ------------------------------------------------------------------ *
  * PULSE — design tokens (Tailwind v4 CSS-first theme)
- * "Kinetic & bold": near-black canvas, one electric accent, big type.
+ * "Kinetic & bold", daylight cut: bright bone canvas, near-black ink,
+ * one electric-orange accent, big type. `ink-950` stays dark on purpose —
+ * it is the colour that sits *on* the accent and behind the auth hero.
  * ------------------------------------------------------------------ */
 @theme {
   --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 
-  /* Canvas + surfaces */
-  --color-ink-950: #0a0a0b;
-  --color-ink-900: #101012;
-  --color-ink-850: #161619;
-  --color-ink-800: #1d1d21;
-  --color-ink-750: #26262b;
-  --color-ink-700: #313138;
-  --color-ink-600: #45454e;
+  /* Canvas + surfaces (light) — 950 is the lone dark "ink" */
+  --color-ink-950: #17161c; /* text on accent · modal scrim · auth hero panel */
+  --color-ink-900: #f6f5f2; /* page canvas */
+  --color-ink-850: #ffffff; /* cards, raised surfaces */
+  --color-ink-800: #edece6; /* subtle fills, chips, hover */
+  --color-ink-750: #e6e4dc; /* skeleton mid, neutral chip */
+  --color-ink-700: #e2dfd6; /* default borders */
+  --color-ink-600: #cbc7ba; /* prominent borders, off-state dots */
 
   /* Type */
-  --color-chalk: #f5f5f3;
-  --color-ash: #a6a6ae;
-  --color-smoke: #74747d;
+  --color-chalk: #1b1a20; /* primary text */
+  --color-ash: #55535d;   /* secondary text (~7:1 on white) */
+  --color-smoke: #78757f; /* muted text / placeholders (~4.6:1) */
 
-  /* Electric accent */
-  --color-volt-200: #eaffa3;
-  --color-volt-300: #ddff6b;
-  --color-volt-400: #ccff00;
-  --color-volt-500: #a8d400;
-  --color-volt-600: #83a600;
+  /* Electric-orange accent — 300 is the readable-on-light text step */
+  --color-volt-200: #ffe6d5;
+  --color-volt-300: #b83c0a; /* accent text / links on light (~5:1) */
+  --color-volt-400: #ee4f11; /* brand fill: buttons, dots, glow */
+  --color-volt-500: #bb3d0c; /* pressed / focus ring */
+  --color-volt-600: #8f2f0c; /* deep */
 
-  /* Support */
-  --color-ember-400: #ff6a33;
-  --color-ember-500: #ff5a1f;
-  --color-sky-400: #38bdf8;
-  --color-rose-400: #fb7185;
-  --color-rose-500: #f43f5e;
+  /* Support — each darkened to read on white */
+  --color-ember-400: #b45309; /* amber — waitlist / filling up */
+  --color-ember-500: #9a4508;
+  --color-sky-400: #0369a1;   /* info */
+  --color-rose-400: #e11d48;  /* error text */
+  --color-rose-500: #c81e4a;  /* danger fill */
 
   --radius-xl: 0.9rem;
   --radius-2xl: 1.25rem;
@@ -66,7 +68,7 @@
   }
 
   html {
-    color-scheme: dark;
+    color-scheme: light;
     -webkit-tap-highlight-color: transparent;
     scroll-behavior: smooth;
   }
@@ -74,7 +76,7 @@
   body {
     margin: 0;
     min-height: 100svh;
-    background-color: var(--color-ink-950);
+    background-color: var(--color-ink-900);
     color: var(--color-chalk);
     font-family: var(--font-sans);
     font-synthesis-weight: none;
@@ -91,10 +93,10 @@
     z-index: -1;
     pointer-events: none;
     background:
-      radial-gradient(55rem 55rem at 88% -12%, color-mix(in srgb, var(--color-volt-400) 10%, transparent), transparent 60%),
-      radial-gradient(40rem 40rem at -5% 108%, color-mix(in srgb, var(--color-sky-400) 7%, transparent), transparent 55%),
-      repeating-linear-gradient(to right, color-mix(in srgb, var(--color-chalk) 3%, transparent) 0 1px, transparent 1px 90px),
-      repeating-linear-gradient(to bottom, color-mix(in srgb, var(--color-chalk) 3%, transparent) 0 1px, transparent 1px 90px);
+      radial-gradient(55rem 55rem at 88% -12%, color-mix(in srgb, var(--color-volt-400) 13%, transparent), transparent 60%),
+      radial-gradient(40rem 40rem at -5% 108%, color-mix(in srgb, var(--color-sky-400) 6%, transparent), transparent 55%),
+      repeating-linear-gradient(to right, color-mix(in srgb, var(--color-chalk) 4%, transparent) 0 1px, transparent 1px 90px),
+      repeating-linear-gradient(to bottom, color-mix(in srgb, var(--color-chalk) 4%, transparent) 0 1px, transparent 1px 90px);
   }
 
   h1, h2, h3, h4 {
@@ -115,13 +117,13 @@
   }
 
   ::-webkit-scrollbar { width: 10px; height: 10px; }
-  ::-webkit-scrollbar-track { background: var(--color-ink-950); }
+  ::-webkit-scrollbar-track { background: var(--color-ink-900); }
   ::-webkit-scrollbar-thumb {
-    background: var(--color-ink-700);
+    background: var(--color-ink-600);
     border-radius: 999px;
-    border: 2px solid var(--color-ink-950);
+    border: 2px solid var(--color-ink-900);
   }
-  ::-webkit-scrollbar-thumb:hover { background: var(--color-ink-600); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-smoke); }
 }
 
 @layer components {
@@ -129,6 +131,9 @@
     background: linear-gradient(180deg, var(--color-ink-850), var(--color-ink-900));
     border: 1px solid var(--color-ink-700);
     border-radius: var(--radius-2xl);
+    box-shadow:
+      0 1px 2px color-mix(in srgb, var(--color-ink-950) 5%, transparent),
+      0 12px 28px -18px color-mix(in srgb, var(--color-ink-950) 22%, transparent);
   }
 
   .panel {

@@ -31,7 +31,7 @@ function FieldWrap({ label, hint, error, required, children }: WrapProps) {
           className="font-display text-[12px] font-semibold uppercase tracking-[0.08em] text-ash"
         >
           {label}
-          {required && <span className="text-volt-400"> *</span>}
+          {required && <span className="text-volt-300"> *</span>}
         </label>
       )}
       {children(id)}

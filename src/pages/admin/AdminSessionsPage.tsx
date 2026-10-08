@@ -226,7 +226,7 @@ function AdminSessionRow({ session }: { session: ClassSessionResponse }) {
         <motion.div
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: 'auto', opacity: 1 }}
-          className="overflow-hidden border-t border-ink-800 bg-ink-950/40 px-4 py-3"
+          className="overflow-hidden border-t border-ink-700 bg-ink-800/50 px-4 py-3"
         >
           <WaitlistInline sessionId={session.id} />
         </motion.div>

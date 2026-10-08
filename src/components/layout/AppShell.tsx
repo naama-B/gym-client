@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
-import { CalendarDays, LayoutGrid, LogOut, Menu, ShieldHalf, Ticket, X } from 'lucide-react'
+import { CalendarDays, LayoutGrid, LogOut, Menu, ShieldHalf, Star, Ticket, X } from 'lucide-react'
 import { useAuth } from '../../auth/AuthContext'
 import { cn } from '../../lib/cn'
 import { Avatar } from '../ui/Avatar'
@@ -9,6 +9,7 @@ import { Logo } from '../Logo'
 
 const links = [
   { to: '/classes', label: 'Classes', icon: LayoutGrid },
+  { to: '/reviews', label: 'Reviews', icon: Star },
   { to: '/bookings', label: 'My Bookings', icon: Ticket },
 ]
 const adminLink = { to: '/admin', label: 'Admin', icon: ShieldHalf }

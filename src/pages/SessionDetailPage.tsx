@@ -191,7 +191,7 @@ export function SessionDetailPage() {
       <section className="space-y-4">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="font-display text-xs uppercase tracking-[0.25em] text-volt-400">
+            <p className="font-display text-xs uppercase tracking-[0.25em] text-volt-300">
               Satisfaction
             </p>
             <h2 className="display mt-1 text-3xl">Member ratings</h2>
@@ -208,6 +208,8 @@ export function SessionDetailPage() {
 
         {ratings.isLoading ? (
           <LoadingBlock label="Loading ratings" />
+        ) : ratings.isError ? (
+          <ErrorState error={ratings.error} onRetry={() => ratings.refetch()} />
         ) : !ratings.data || ratings.data.ratings.length === 0 ? (
           <Card className="flex items-center gap-3 p-6 text-sm text-ash">
             <MessageSquareQuote className="size-5 text-smoke" />

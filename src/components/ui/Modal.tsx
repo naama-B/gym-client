@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'motion/react'
 import { X } from 'lucide-react'
 import { cn } from '../../lib/cn'
+import { usePortalContainer } from '../../lib/usePortalContainer'
 
 export function Modal({
   open,
@@ -30,12 +31,15 @@ export function Modal({
     }
   }, [open, onClose])
 
+  const container = usePortalContainer('modal')
+  if (!container) return null
+
   return createPortal(
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
           <motion.div
-            className="absolute inset-0 bg-ink-950/80 backdrop-blur-sm"
+            className="absolute inset-0 bg-ink-950/55 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -50,7 +54,7 @@ export function Modal({
             transition={{ type: 'spring', stiffness: 320, damping: 30 }}
             className={cn(
               'card relative z-10 w-full max-w-lg rounded-b-none rounded-t-3xl p-6 sm:rounded-3xl',
-              'shadow-[0_-20px_60px_-20px_rgb(0_0_0/0.8)] sm:shadow-[0_24px_60px_-24px_rgb(0_0_0/0.8)]',
+              'shadow-[0_-20px_60px_-20px_rgb(23_22_28/0.3)] sm:shadow-[0_24px_60px_-24px_rgb(23_22_28/0.25)]',
               className,
             )}
           >
@@ -72,6 +76,6 @@ export function Modal({
         </div>
       )}
     </AnimatePresence>,
-    document.body,
+    container,
   )
 }

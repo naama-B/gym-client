@@ -27,6 +27,19 @@ export function RateModal({
   const [comment, setComment] = useState(existing?.comment ?? '')
   const [error, setError] = useState<string | null>(null)
 
+  // The modal instance is reused (only its `open` prop toggles), so re-seed the form from the
+  // current rating each time it opens — otherwise "Update my rating" shows an empty form.
+  // This is the "adjust state while rendering" pattern (React docs), not an effect.
+  const [wasOpen, setWasOpen] = useState(open)
+  if (open !== wasOpen) {
+    setWasOpen(open)
+    if (open) {
+      setStars(existing?.stars ?? 0)
+      setComment(existing?.comment ?? '')
+      setError(null)
+    }
+  }
+
   const submit = async (e: FormEvent) => {
     e.preventDefault()
     if (stars < 1) {

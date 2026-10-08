@@ -13,7 +13,7 @@ export function AdminLayout() {
   return (
     <div className="space-y-8">
       <header className="flex flex-col gap-2">
-        <p className="font-display text-xs uppercase tracking-[0.3em] text-volt-400">Control room</p>
+        <p className="font-display text-xs uppercase tracking-[0.3em] text-volt-300">Control room</p>
         <h1 className="display text-5xl sm:text-6xl">Admin</h1>
         <p className="max-w-xl text-sm text-ash">
           Schedule sessions, curate the class catalogue, and keep the roster of instructors current.

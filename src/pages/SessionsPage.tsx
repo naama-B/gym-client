@@ -25,6 +25,8 @@ export function SessionsPage() {
   const [sortKey, setSortKey] = useState('soon')
   const [page, setPage] = useState(1)
   const debouncedSearch = useDebounced(search)
+  // Pinned at mount: this page only lists classes that haven't taken place yet.
+  const [fromUtc] = useState(() => new Date().toISOString())
 
   // Any filter change resets to page 1.
   const setSearchReset = (v: string) => {
@@ -45,6 +47,7 @@ export function SessionsPage() {
     pageSize: PAGE_SIZE,
     search: debouncedSearch.trim() || undefined,
     onlyAvailable: onlyAvailable || undefined,
+    fromUtc,
     ...sorts.find((s) => s.key === sortKey)!.q,
   }
 
@@ -63,11 +66,11 @@ export function SessionsPage() {
   return (
     <div className="space-y-8">
       <header className="flex flex-col gap-2">
-        <p className="font-display text-xs uppercase tracking-[0.3em] text-volt-400">The schedule</p>
+        <p className="font-display text-xs uppercase tracking-[0.3em] text-volt-300">The schedule</p>
         <h1 className="display text-5xl sm:text-6xl">Find your class</h1>
         <p className="max-w-xl text-sm text-ash">
-          Every session has a fixed capacity. Book early — when it's full you'll join the queue and
-          move up automatically as people drop.
+          Every class that hasn't taken place yet. Each session has a fixed capacity — book early,
+          and when it's full you'll join the queue and move up automatically as people drop.
         </p>
       </header>
 

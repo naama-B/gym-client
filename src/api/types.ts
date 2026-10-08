@@ -156,6 +156,17 @@ export interface SessionRatingsResponse {
   ratings: ClassRatingResponse[]
 }
 
+/** A rated session with its title, instructor and reviews — one entry per session on the reviews page. */
+export interface ReviewedSessionResponse {
+  classSessionId: number
+  classTypeName: string
+  instructorName: string
+  startsAtUtc: string
+  ratingCount: number
+  averageStars: number | null
+  ratings: ClassRatingResponse[]
+}
+
 // --- Common ---
 
 export interface PagedResult<T> {

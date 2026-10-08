@@ -14,6 +14,7 @@ import type {
   LoginRequest,
   PagedResult,
   RegisterRequest,
+  ReviewedSessionResponse,
   SessionRatingsResponse,
   SessionWaitlistResponse,
 } from './types'
@@ -42,6 +43,8 @@ function toQueryString(query: ClassSessionQuery): string {
 export const sessionsApi = {
   list: (query: ClassSessionQuery, signal?: AbortSignal) =>
     http.get<PagedResult<ClassSessionResponse>>(`/classsessions${toQueryString(query)}`, signal),
+  reviews: (signal?: AbortSignal) =>
+    http.get<ReviewedSessionResponse[]>('/classsessions/reviews', signal),
   get: (id: number, signal?: AbortSignal) =>
     http.get<ClassSessionResponse>(`/classsessions/${id}`, signal),
   create: (body: CreateClassSessionRequest) =>

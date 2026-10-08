@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'motion/react'
 import { CheckCircle2, Info, TriangleAlert, X } from 'lucide-react'
 import { cn } from '../../lib/cn'
+import { usePortalContainer } from '../../lib/usePortalContainer'
 
 type ToastTone = 'success' | 'error' | 'info'
 interface Toast {
@@ -23,13 +24,14 @@ const ToastContext = createContext<ToastContextValue | null>(null)
 
 const icons = { success: CheckCircle2, error: TriangleAlert, info: Info }
 const accents: Record<ToastTone, string> = {
-  success: 'text-volt-400',
+  success: 'text-volt-300',
   error: 'text-rose-400',
   info: 'text-sky-400',
 }
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([])
+  const container = usePortalContainer('toast')
 
   const remove = useCallback((id: number) => {
     setToasts((prev) => prev.filter((t) => t.id !== id))
@@ -57,7 +59,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext value={value}>
       {children}
-      {createPortal(
+      {container && createPortal(
         <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[60] flex flex-col items-center gap-2 p-4 sm:items-end sm:p-6">
           <AnimatePresence initial={false}>
             {toasts.map((t) => {
@@ -70,7 +72,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, x: 40, scale: 0.95 }}
                   transition={{ type: 'spring', stiffness: 340, damping: 32 }}
-                  className="panel pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl p-3.5 shadow-[0_20px_50px_-20px_rgb(0_0_0/0.8)]"
+                  className="panel pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl p-3.5 shadow-[0_20px_50px_-20px_rgb(23_22_28/0.25)]"
                 >
                   <Icon className={cn('mt-0.5 size-5 shrink-0', accents[t.tone])} aria-hidden />
                   <div className="min-w-0 flex-1">
@@ -91,7 +93,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             })}
           </AnimatePresence>
         </div>,
-        document.body,
+        container,
       )}
     </ToastContext>
   )
