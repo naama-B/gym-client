@@ -130,6 +130,25 @@ export interface SessionWaitlistResponse {
   entries: WaitlistEntryResponse[]
 }
 
+// --- Participants ---
+
+export interface ParticipantResponse {
+  bookingId: number
+  memberId: number
+  memberName: string
+  email: string
+  bookedAtUtc: string
+}
+
+export interface SessionParticipantsResponse {
+  classSessionId: number
+  classTypeName: string
+  startsAtUtc: string
+  capacity: number
+  count: number
+  participants: ParticipantResponse[]
+}
+
 // --- Ratings ---
 
 export interface CreateClassRatingRequest {

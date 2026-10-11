@@ -9,12 +9,14 @@ import {
   MessageSquareQuote,
   Star,
   UserRound,
+  Users,
   X,
 } from 'lucide-react'
 import { errorMessage } from '../api/client'
 import {
   useCancelSession,
   useMyBookings,
+  useParticipants,
   useRatings,
   useSession,
   useWaitlist,
@@ -45,6 +47,7 @@ export function SessionDetailPage() {
   const { run, isPending: booking } = useBookAction()
   const cancelSession = useCancelSession()
 
+  const [showParticipants, setShowParticipants] = useState(false)
   const [showWaitlist, setShowWaitlist] = useState(false)
   const [rateOpen, setRateOpen] = useState(false)
 
@@ -166,6 +169,14 @@ export function SessionDetailPage() {
             <Button
               variant="secondary"
               size="sm"
+              onClick={() => setShowParticipants((v) => !v)}
+            >
+              <Users className="size-4" />
+              {showParticipants ? 'Hide' : 'View'} participants
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={() => setShowWaitlist((v) => !v)}
             >
               <ListOrdered className="size-4" />
@@ -185,6 +196,7 @@ export function SessionDetailPage() {
         </Card>
       )}
 
+      {isAdmin && showParticipants && <ParticipantsPanel sessionId={s.id} />}
       {isAdmin && showWaitlist && <WaitlistPanel sessionId={s.id} />}
 
       {/* Ratings */}
@@ -251,6 +263,48 @@ export function SessionDetailPage() {
         existing={myRating}
       />
     </div>
+  )
+}
+
+function ParticipantsPanel({ sessionId }: { sessionId: number }) {
+  const participants = useParticipants(sessionId)
+
+  return (
+    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+      <Card className="p-5">
+        <p className="mb-3 font-display text-sm uppercase tracking-tight">
+          Participants
+          {participants.data && (
+            <span className="tnum ml-2 text-smoke">
+              {participants.data.count}/{participants.data.capacity} booked
+            </span>
+          )}
+        </p>
+        {participants.isLoading ? (
+          <LoadingBlock label="Loading participants" />
+        ) : participants.isError ? (
+          <ErrorState error={participants.error} onRetry={() => participants.refetch()} />
+        ) : !participants.data || participants.data.participants.length === 0 ? (
+          <p className="text-sm text-smoke">Nobody has booked this session yet.</p>
+        ) : (
+          <ol className="divide-y divide-ink-800">
+            {participants.data.participants.map((p, i) => (
+              <li key={p.bookingId} className="flex items-center gap-3 py-2.5">
+                <span className="tnum grid size-7 place-items-center rounded-lg bg-ink-800 font-display text-xs font-bold text-volt-300">
+                  {i + 1}
+                </span>
+                <Avatar name={p.memberName} size="sm" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm">{p.memberName}</p>
+                  <p className="truncate text-[11px] text-smoke">{p.email}</p>
+                </div>
+                <span className="text-[11px] text-smoke">{relativeTime(p.bookedAtUtc)}</span>
+              </li>
+            ))}
+          </ol>
+        )}
+      </Card>
+    </motion.div>
   )
 }
 

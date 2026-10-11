@@ -15,6 +15,7 @@ import type {
   PagedResult,
   RegisterRequest,
   ReviewedSessionResponse,
+  SessionParticipantsResponse,
   SessionRatingsResponse,
   SessionWaitlistResponse,
 } from './types'
@@ -52,6 +53,8 @@ export const sessionsApi = {
   cancel: (id: number) => http.post<void>(`/classsessions/${id}/cancel`),
   waitlist: (id: number, signal?: AbortSignal) =>
     http.get<SessionWaitlistResponse>(`/classsessions/${id}/waitlist`, signal),
+  participants: (id: number, signal?: AbortSignal) =>
+    http.get<SessionParticipantsResponse>(`/classsessions/${id}/participants`, signal),
   ratings: (id: number, signal?: AbortSignal) =>
     http.get<SessionRatingsResponse>(`/classsessions/${id}/ratings`, signal),
   rate: (id: number, body: CreateClassRatingRequest) =>

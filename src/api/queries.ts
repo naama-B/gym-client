@@ -23,6 +23,7 @@ export const qk = {
   reviews: ['reviews'] as const,
   session: (id: number) => ['session', id] as const,
   waitlist: (id: number) => ['waitlist', id] as const,
+  participants: (id: number) => ['participants', id] as const,
   ratings: (id: number) => ['ratings', id] as const,
   myBookings: ['bookings', 'mine'] as const,
   classTypes: ['classTypes'] as const,
@@ -62,6 +63,14 @@ export function useWaitlist(id: number, enabled = true) {
   })
 }
 
+export function useParticipants(id: number, enabled = true) {
+  return useQuery({
+    queryKey: qk.participants(id),
+    queryFn: ({ signal }) => sessionsApi.participants(id, signal),
+    enabled: enabled && Number.isFinite(id) && id > 0,
+  })
+}
+
 export function useRatings(id: number) {
   return useQuery({
     queryKey: qk.ratings(id),
@@ -85,6 +94,7 @@ function invalidateBookingWorld(qc: ReturnType<typeof useQueryClient>, sessionId
   if (sessionId) {
     qc.invalidateQueries({ queryKey: qk.session(sessionId) })
     qc.invalidateQueries({ queryKey: qk.waitlist(sessionId) })
+    qc.invalidateQueries({ queryKey: qk.participants(sessionId) })
   }
 }
 

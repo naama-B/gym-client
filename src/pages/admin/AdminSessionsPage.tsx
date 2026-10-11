@@ -1,13 +1,14 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { CalendarPlus, ChevronDown, ListOrdered, X } from 'lucide-react'
+import { CalendarPlus, ChevronDown, Users, X } from 'lucide-react'
 import { errorMessage } from '../../api/client'
 import {
   useCancelSession,
   useClassTypes,
   useCreateSession,
   useInstructors,
+  useParticipants,
   useSessions,
   useWaitlist,
 } from '../../api/queries'
@@ -211,7 +212,7 @@ function AdminSessionRow({ session }: { session: ClassSessionResponse }) {
               open && 'border-volt-400 text-volt-300',
             )}
           >
-            <ListOrdered className="size-3.5" /> Waitlist
+            <Users className="size-3.5" /> People
             <ChevronDown className={cn('size-3.5 transition-transform', open && 'rotate-180')} />
           </button>
           {!cancelled && (
@@ -228,10 +229,46 @@ function AdminSessionRow({ session }: { session: ClassSessionResponse }) {
           animate={{ height: 'auto', opacity: 1 }}
           className="overflow-hidden border-t border-ink-700 bg-ink-800/50 px-4 py-3"
         >
-          <WaitlistInline sessionId={session.id} />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <p className="mb-1 font-display text-[11px] uppercase tracking-[0.15em] text-smoke">
+                Participants
+              </p>
+              <ParticipantsInline sessionId={session.id} />
+            </div>
+            <div>
+              <p className="mb-1 font-display text-[11px] uppercase tracking-[0.15em] text-smoke">
+                Waitlist
+              </p>
+              <WaitlistInline sessionId={session.id} />
+            </div>
+          </div>
         </motion.div>
       )}
     </Card>
+  )
+}
+
+function ParticipantsInline({ sessionId }: { sessionId: number }) {
+  const participants = useParticipants(sessionId)
+  if (participants.isLoading) return <p className="py-2 text-sm text-smoke">Loading participants…</p>
+  if (participants.isError)
+    return <p className="py-2 text-sm text-rose-400">Couldn't load the participants.</p>
+  if (!participants.data || participants.data.participants.length === 0)
+    return <p className="py-2 text-sm text-smoke">Nobody has booked yet.</p>
+
+  return (
+    <ol className="divide-y divide-ink-800">
+      {participants.data.participants.map((p, i) => (
+        <li key={p.bookingId} className="flex items-center gap-3 py-2">
+          <span className="tnum grid size-6 place-items-center rounded-md bg-ink-800 font-display text-[11px] font-bold text-volt-300">
+            {i + 1}
+          </span>
+          <Avatar name={p.memberName} size="sm" />
+          <span className="text-sm">{p.memberName}</span>
+        </li>
+      ))}
+    </ol>
   )
 }
 
