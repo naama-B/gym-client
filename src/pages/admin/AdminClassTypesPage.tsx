@@ -1,7 +1,11 @@
 import { useState } from 'react'
-import { Clock, Dumbbell, Pencil, Plus, Trash2, Users } from 'lucide-react'
+import { Archive, ArchiveRestore, Clock, Dumbbell, Pencil, Plus, Users } from 'lucide-react'
 import { errorMessage } from '../../api/client'
-import { useClassTypes, useDeleteClassType } from '../../api/queries'
+import {
+  useActivateClassType,
+  useClassTypes,
+  useDeactivateClassType,
+} from '../../api/queries'
 import type { ClassTypeResponse } from '../../api/types'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
@@ -14,16 +18,33 @@ import { useToast } from '../../components/ui/Toast'
 import { ClassTypeForm } from './ClassTypeForm'
 
 export function AdminClassTypesPage() {
-  const classTypes = useClassTypes()
+  const classTypes = useClassTypes(true)
+  const toast = useToast()
+  const activate = useActivateClassType()
   const [creating, setCreating] = useState(false)
   const [editing, setEditing] = useState<ClassTypeResponse | null>(null)
-  const [deleting, setDeleting] = useState<ClassTypeResponse | null>(null)
+  const [deactivating, setDeactivating] = useState<ClassTypeResponse | null>(null)
+
+  const activeCount = classTypes.data?.filter((c) => c.isActive).length ?? 0
+  // active first, then inactive; the API already sorts by name within each group
+  const sorted = classTypes.data
+    ? [...classTypes.data].sort((a, b) => Number(b.isActive) - Number(a.isActive))
+    : []
+
+  const reactivate = async (c: ClassTypeResponse) => {
+    try {
+      await activate.mutateAsync(c.id)
+      toast.success('Class type reactivated', c.name)
+    } catch (err) {
+      toast.error('Could not reactivate', errorMessage(err))
+    }
+  }
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="font-display text-sm uppercase tracking-[0.15em] text-smoke">
-          Catalogue <span className="text-ink-600">/ {classTypes.data?.length ?? 0}</span>
+          Catalogue <span className="text-ink-600">/ {activeCount} active</span>
         </h2>
         <Button size="sm" onClick={() => setCreating(true)}>
           <Plus className="size-4" /> New class type
@@ -48,17 +69,33 @@ export function AdminClassTypesPage() {
         </EmptyState>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
-          {classTypes.data.map((c) => (
-            <Card key={c.id} className="flex flex-col gap-3 p-5">
+          {sorted.map((c) => (
+            <Card
+              key={c.id}
+              className={'flex flex-col gap-3 p-5 ' + (c.isActive ? '' : 'border-dashed opacity-60')}
+            >
               <div className="flex items-start justify-between gap-3">
-                <h3 className="font-display text-xl uppercase tracking-tight">{c.name}</h3>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="font-display text-xl uppercase tracking-tight">{c.name}</h3>
+                  {!c.isActive && <Badge tone="rose">Inactive</Badge>}
+                </div>
                 <div className="flex gap-1">
                   <IconBtn label="Edit" onClick={() => setEditing(c)}>
                     <Pencil className="size-4" />
                   </IconBtn>
-                  <IconBtn label="Delete" danger onClick={() => setDeleting(c)}>
-                    <Trash2 className="size-4" />
-                  </IconBtn>
+                  {c.isActive ? (
+                    <IconBtn label="Deactivate" danger onClick={() => setDeactivating(c)}>
+                      <Archive className="size-4" />
+                    </IconBtn>
+                  ) : (
+                    <IconBtn
+                      label="Reactivate"
+                      disabled={activate.isPending}
+                      onClick={() => reactivate(c)}
+                    >
+                      <ArchiveRestore className="size-4" />
+                    </IconBtn>
+                  )}
                 </div>
               </div>
               {c.description && <p className="text-[13px] text-ash">{c.description}</p>}
@@ -88,8 +125,8 @@ export function AdminClassTypesPage() {
       {editing && (
         <ClassTypeForm open onClose={() => setEditing(null)} existing={editing} />
       )}
-      {deleting && (
-        <DeleteDialog classType={deleting} onClose={() => setDeleting(null)} />
+      {deactivating && (
+        <DeactivateDialog classType={deactivating} onClose={() => setDeactivating(null)} />
       )}
     </div>
   )
@@ -98,20 +135,24 @@ export function AdminClassTypesPage() {
 function IconBtn({
   label,
   danger,
+  disabled,
   onClick,
   children,
 }: {
   label: string
   danger?: boolean
+  disabled?: boolean
   onClick: () => void
   children: React.ReactNode
 }) {
   return (
     <button
       aria-label={label}
+      title={label}
+      disabled={disabled}
       onClick={onClick}
       className={
-        'grid size-8 place-items-center rounded-lg border border-ink-700 text-smoke transition-colors ' +
+        'grid size-8 place-items-center rounded-lg border border-ink-700 text-smoke transition-colors disabled:opacity-50 ' +
         (danger ? 'hover:border-rose-500/50 hover:text-rose-400' : 'hover:border-volt-400 hover:text-volt-300')
       }
     >
@@ -120,7 +161,7 @@ function IconBtn({
   )
 }
 
-function DeleteDialog({
+function DeactivateDialog({
   classType,
   onClose,
 }: {
@@ -128,15 +169,15 @@ function DeleteDialog({
   onClose: () => void
 }) {
   const toast = useToast()
-  const del = useDeleteClassType()
+  const deactivate = useDeactivateClassType()
 
   const confirm = async () => {
     try {
-      await del.mutateAsync(classType.id)
-      toast.success('Class type deleted', classType.name)
+      await deactivate.mutateAsync(classType.id)
+      toast.success('Class type deactivated', classType.name)
       onClose()
     } catch (err) {
-      toast.error('Could not delete', errorMessage(err))
+      toast.error('Could not deactivate', errorMessage(err))
     }
   }
 
@@ -144,18 +185,20 @@ function DeleteDialog({
     <Modal
       open
       onClose={onClose}
-      title="Delete class type"
-      description={`"${classType.name}" will be removed from the catalogue.`}
+      title="Deactivate class type"
+      description={`"${classType.name}" will stop being offered. No new sessions can be scheduled for it.`}
     >
       <p className="text-sm text-ash">
-        This fails if any scheduled session still uses it — cancel or wait those out first.
+        Past sessions, bookings and reviews are kept. If any upcoming session of this type is
+        still scheduled, cancel it first on the Sessions tab — otherwise deactivation is refused.
+        You can reactivate the class type at any time.
       </p>
       <div className="mt-5 flex gap-3">
         <Button variant="ghost" onClick={onClose} className="flex-1">
           Keep it
         </Button>
-        <Button variant="danger" loading={del.isPending} onClick={confirm} className="flex-1">
-          Delete
+        <Button variant="danger" loading={deactivate.isPending} onClick={confirm} className="flex-1">
+          Deactivate
         </Button>
       </div>
     </Modal>

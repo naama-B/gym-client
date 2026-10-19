@@ -153,10 +153,11 @@ export function useCancelSession() {
 
 /* ---------------- Admin: class types ---------------- */
 
-export function useClassTypes() {
+/** Active class types; the admin catalogue passes `includeInactive` to see deactivated ones too. */
+export function useClassTypes(includeInactive = false) {
   return useQuery({
-    queryKey: qk.classTypes,
-    queryFn: ({ signal }) => classTypesApi.list(signal),
+    queryKey: [...qk.classTypes, { includeInactive }],
+    queryFn: ({ signal }) => classTypesApi.list(includeInactive, signal),
   })
 }
 
@@ -177,10 +178,18 @@ export function useUpdateClassType() {
   })
 }
 
-export function useDeleteClassType() {
+export function useDeactivateClassType() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (id: number) => classTypesApi.remove(id),
+    mutationFn: (id: number) => classTypesApi.deactivate(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: qk.classTypes }),
+  })
+}
+
+export function useActivateClassType() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number) => classTypesApi.activate(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: qk.classTypes }),
   })
 }

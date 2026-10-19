@@ -35,6 +35,7 @@ export interface ClassTypeResponse {
   description: string | null
   durationMinutes: number
   defaultCapacity: number
+  isActive: boolean
   tags: string[]
 }
 

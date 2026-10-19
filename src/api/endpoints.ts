@@ -70,11 +70,16 @@ export const bookingsApi = {
 
 // --- Class types ---
 export const classTypesApi = {
-  list: (signal?: AbortSignal) => http.get<ClassTypeResponse[]>('/classtypes', signal),
+  list: (includeInactive: boolean, signal?: AbortSignal) =>
+    http.get<ClassTypeResponse[]>(
+      `/classtypes${includeInactive ? '?includeInactive=true' : ''}`,
+      signal,
+    ),
   create: (body: ClassTypeInput) => http.post<ClassTypeResponse>('/classtypes', body),
   update: (id: number, body: ClassTypeInput) =>
     http.put<ClassTypeResponse>(`/classtypes/${id}`, body),
-  remove: (id: number) => http.del<void>(`/classtypes/${id}`),
+  deactivate: (id: number) => http.post<void>(`/classtypes/${id}/deactivate`),
+  activate: (id: number) => http.post<void>(`/classtypes/${id}/activate`),
 }
 
 // --- Instructors ---
