@@ -84,6 +84,12 @@ export const classTypesApi = {
 
 // --- Instructors ---
 export const instructorsApi = {
-  list: (signal?: AbortSignal) => http.get<InstructorResponse[]>('/instructors', signal),
+  list: (includeInactive: boolean, signal?: AbortSignal) =>
+    http.get<InstructorResponse[]>(
+      `/instructors${includeInactive ? '?includeInactive=true' : ''}`,
+      signal,
+    ),
   create: (body: CreateInstructorRequest) => http.post<InstructorResponse>('/instructors', body),
+  deactivate: (id: number) => http.post<void>(`/instructors/${id}/deactivate`),
+  activate: (id: number) => http.post<void>(`/instructors/${id}/activate`),
 }

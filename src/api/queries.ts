@@ -196,10 +196,11 @@ export function useActivateClassType() {
 
 /* ---------------- Admin: instructors ---------------- */
 
-export function useInstructors() {
+/** Active instructors; the admin roster passes `includeInactive` to see deactivated ones too. */
+export function useInstructors(includeInactive = false) {
   return useQuery({
-    queryKey: qk.instructors,
-    queryFn: ({ signal }) => instructorsApi.list(signal),
+    queryKey: [...qk.instructors, { includeInactive }],
+    queryFn: ({ signal }) => instructorsApi.list(includeInactive, signal),
   })
 }
 
@@ -207,6 +208,22 @@ export function useCreateInstructor() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (body: CreateInstructorRequest) => instructorsApi.create(body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: qk.instructors }),
+  })
+}
+
+export function useDeactivateInstructor() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number) => instructorsApi.deactivate(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: qk.instructors }),
+  })
+}
+
+export function useActivateInstructor() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number) => instructorsApi.activate(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: qk.instructors }),
   })
 }

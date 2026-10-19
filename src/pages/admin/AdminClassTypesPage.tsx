@@ -42,7 +42,7 @@ export function AdminClassTypesPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="font-display text-sm uppercase tracking-[0.15em] text-smoke">
           Catalogue <span className="text-ink-600">/ {activeCount} active</span>
         </h2>
@@ -72,50 +72,63 @@ export function AdminClassTypesPage() {
           {sorted.map((c) => (
             <Card
               key={c.id}
-              className={'flex flex-col gap-3 p-5 ' + (c.isActive ? '' : 'border-dashed opacity-60')}
+              className={'flex flex-col gap-3 p-5 ' + (c.isActive ? '' : 'border-dashed shadow-none')}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="font-display text-xl uppercase tracking-tight">{c.name}</h3>
+                  <h3
+                    className={
+                      'font-display text-xl uppercase tracking-tight ' +
+                      (c.isActive ? '' : 'text-smoke line-through decoration-1')
+                    }
+                  >
+                    {c.name}
+                  </h3>
                   {!c.isActive && <Badge tone="rose">Inactive</Badge>}
                 </div>
-                <div className="flex gap-1">
-                  <IconBtn label="Edit" onClick={() => setEditing(c)}>
-                    <Pencil className="size-4" />
-                  </IconBtn>
+                <div className="flex shrink-0 gap-1">
                   {c.isActive ? (
-                    <IconBtn label="Deactivate" danger onClick={() => setDeactivating(c)}>
-                      <Archive className="size-4" />
-                    </IconBtn>
+                    <>
+                      <IconBtn label="Edit" onClick={() => setEditing(c)}>
+                        <Pencil className="size-4" />
+                      </IconBtn>
+                      <IconBtn label="Deactivate" danger onClick={() => setDeactivating(c)}>
+                        <Archive className="size-4" />
+                      </IconBtn>
+                    </>
                   ) : (
-                    <IconBtn
-                      label="Reactivate"
-                      disabled={activate.isPending}
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="h-8"
+                      loading={activate.isPending && activate.variables === c.id}
                       onClick={() => reactivate(c)}
                     >
-                      <ArchiveRestore className="size-4" />
-                    </IconBtn>
+                      <ArchiveRestore className="size-4" /> Reactivate
+                    </Button>
                   )}
                 </div>
               </div>
-              {c.description && <p className="text-[13px] text-ash">{c.description}</p>}
-              <div className="tnum flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-smoke">
-                <span className="inline-flex items-center gap-1.5">
-                  <Clock className="size-3.5" /> {c.durationMinutes} min
-                </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <Users className="size-3.5" /> cap {c.defaultCapacity}
-                </span>
-              </div>
-              {c.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {c.tags.map((t) => (
-                    <Badge key={t} tone="neutral">
-                      {t}
-                    </Badge>
-                  ))}
+              <div className={'flex flex-col gap-3 ' + (c.isActive ? '' : 'opacity-50')}>
+                {c.description && <p className="text-[13px] text-ash">{c.description}</p>}
+                <div className="tnum flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-smoke">
+                  <span className="inline-flex items-center gap-1.5">
+                    <Clock className="size-3.5" /> {c.durationMinutes} min
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <Users className="size-3.5" /> cap {c.defaultCapacity}
+                  </span>
                 </div>
-              )}
+                {c.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {c.tags.map((t) => (
+                      <Badge key={t} tone="neutral">
+                        {t}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
             </Card>
           ))}
         </div>
@@ -135,13 +148,11 @@ export function AdminClassTypesPage() {
 function IconBtn({
   label,
   danger,
-  disabled,
   onClick,
   children,
 }: {
   label: string
   danger?: boolean
-  disabled?: boolean
   onClick: () => void
   children: React.ReactNode
 }) {
@@ -149,10 +160,9 @@ function IconBtn({
     <button
       aria-label={label}
       title={label}
-      disabled={disabled}
       onClick={onClick}
       className={
-        'grid size-8 place-items-center rounded-lg border border-ink-700 text-smoke transition-colors disabled:opacity-50 ' +
+        'grid size-8 place-items-center rounded-lg border border-ink-700 text-smoke transition-colors ' +
         (danger ? 'hover:border-rose-500/50 hover:text-rose-400' : 'hover:border-volt-400 hover:text-volt-300')
       }
     >

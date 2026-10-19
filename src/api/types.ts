@@ -53,6 +53,7 @@ export interface InstructorResponse {
   id: number
   fullName: string
   bio: string | null
+  isActive: boolean
 }
 
 export interface CreateInstructorRequest {
